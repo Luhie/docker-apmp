@@ -1,0 +1,63 @@
+services:
+  apache:
+    image: httpd:latest
+    container_name: server
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./app:/home/somftp
+      - ./.config/apache2/conf:/usr/local/apache2/conf/
+      - ./logs/apache2:/usr/local/apache2/logs
+    depends_on:
+      - php
+      - mysql
+    networks:
+      - dev-network
+
+  php:
+    image: php:7.4-fpm
+    container_name: php
+    restart: unless-stopped
+    command: >
+      /bin/sh -c "docker-php-ext-install mysqli && php-fpm"
+    volumes:
+      - ./app:/home/somftp
+      - ./.config/php-fpm:/usr/local/etc/
+    networks:
+      - dev-network
+
+  mysql:
+    image: mariadb:latest
+    container_name: mysql_db
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - dev-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql
+    networks:
+      - dev-network
+
+networks:
+  dev-network:
+
+volumes:
+  db_data:

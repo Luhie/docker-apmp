@@ -1,0 +1,14 @@
+server-directroy/
+  ├── app
+  │  └── index.php
+  └──── docker-compose.yml
+  └──── .env
+  └── .config/
+  │  └── apache2/
+  │  │  └── conf
+  │  │      └── httpd.conf
+  │  └── php-fpm
+  │       └── php
+  │           └── php.ini
+  │  
+  └──── logs
